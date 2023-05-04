@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typing Effect</title>
+<style>
+  body {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    margin: 0;
+    padding-top: 100px;
+  }
+  img {
+    width: 500px; /* Set the width of the image */
+    height: auto; /* Maintain the aspect ratio */
+    margin-bottom: 20px;
+  }
+
+  button {
+    margin: 0;
+  }
+  #typed-text {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 18px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <img src="thinker.png" alt="Thinking Monkey">
+  <button onclick="startTyping()">?</button>
+  <p id="typed-text"></p>
+
+  <script>
+    let strings = [];
+    let currentStringIndex = 0;
+    let currentCharIndex = 0;
+    let typingInProgress = false;
+
+    fetch('GPTthoughts.txt')
+      .then(response => response.text())
+      .then(data => {
+        strings = data.split('\n');
+      })
+      .catch(error => {
+        console.error('Error fetching strings:', error);
+      });
+
+    function typeCharacter() {
+      const textElement = document.getElementById("typed-text");
+      textElement.textContent += strings[currentStringIndex].charAt(currentCharIndex);
+
+      currentCharIndex++;
+      if (currentCharIndex < strings[currentStringIndex].length) {
+        setTimeout(typeCharacter, Math.random() * 50);
+      } else {
+        currentCharIndex = 0;
+        typingInProgress = false;
+      }
+    }
+
+    function startTyping() {
+      if (!typingInProgress && strings.length > 0) {
+        typingInProgress = true;
+        currentStringIndex = Math.floor(Math.random() * strings.length);
+        document.getElementById("typed-text").textContent = "";
+        setTimeout(typeCharacter, 500);
+      }
+    }
+  </script>
+</body>
+</html>
+
